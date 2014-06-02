@@ -41,10 +41,10 @@ namespace c64_win_gdi
 {
 	public partial class Form1 : Form
 	{
-		File _kernel = new File(new FileInfo(@".\roms\kernal"));
-		File _basic = new File(new FileInfo(@".\roms\basic"));
-		File _charGen = new File(new FileInfo(@".\roms\chargen"));
-		File _driveKernel = new File(new FileInfo(@".\roms\dos1541"));
+		File _kernel = new File(new FileInfo(@".\kernal.rom"));
+		File _basic = new File(new FileInfo(@".\basic.rom"));
+		File _charGen = new File(new FileInfo(@".\chargen.rom"));
+		File _driveKernel = new File(new FileInfo(@".\d1541.rom"));
 
 		private Board.Board _board;
 		private DiskDrive.CBM1541 _drive;
@@ -67,7 +67,7 @@ namespace c64_win_gdi
 
 			_keyboard = new Input.Keyboard(_board.SystemCias[0].PortA, _board.SystemCias[0].PortB, null);
 
-			_drive.Drive.Attach(new File(new FileInfo(@"d:\temp\c64 roms\COMBATCR.D64")));
+			//_drive.Drive.Attach(new File(new FileInfo(@"d:\temp\c64 roms\COMBATCR.D64")));
 			//_drive.Drive.Attach(new File(new FileInfo(@"E:\Commodore\Games\C=64\war bringer\COMBATCR.D64")));
 
 			Thread thread = new Thread(new ThreadStart(_board.Start));
