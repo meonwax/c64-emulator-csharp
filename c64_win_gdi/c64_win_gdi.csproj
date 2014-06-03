@@ -49,16 +49,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Env.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="C64EmuForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="C64EmuForm.Designer.cs">
+      <DependentUpon>C64EmuForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="C64EmuForm.resx">
+      <DependentUpon>C64EmuForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -110,6 +110,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="attach.ico" />
+    <Content Include="frame.ico" />
+    <Content Include="swap.ico" />
     <Content Include="open.ico" />
     <Content Include="save.ico" />
   </ItemGroup>

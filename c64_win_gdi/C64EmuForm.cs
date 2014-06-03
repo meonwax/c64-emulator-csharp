@@ -39,7 +39,7 @@ using System.Threading;
 
 namespace c64_win_gdi
 {
-	public partial class Form1 : Form
+	public partial class C64EmuForm : Form
 	{
 		File _kernel = new File(new FileInfo(@".\kernal.rom"));
 		File _basic = new File(new FileInfo(@".\basic.rom"));
@@ -53,7 +53,7 @@ namespace c64_win_gdi
 
 		private byte _currentJoystic;
 
-		public Form1()
+		public C64EmuForm()
 		{
 			InitializeComponent();
 
@@ -66,9 +66,6 @@ namespace c64_win_gdi
 			_board.OnSaveState += new Board.Board.StateOperationDelegate(_drive.WriteDeviceState);
 
 			_keyboard = new Input.Keyboard(_board.SystemCias[0].PortA, _board.SystemCias[0].PortB, null);
-
-			//_drive.Drive.Attach(new File(new FileInfo(@"d:\temp\c64 roms\COMBATCR.D64")));
-			//_drive.Drive.Attach(new File(new FileInfo(@"E:\Commodore\Games\C=64\war bringer\COMBATCR.D64")));
 
 			Thread thread = new Thread(new ThreadStart(_board.Start));
 			thread.Start();
@@ -184,19 +181,33 @@ namespace c64_win_gdi
 				handle(Input.Keyboard.Keys.J1F + _currentJoystic);
 		}
 
-		private void btnLoad_Click(object sender, EventArgs e)
-		{
-			_board.LoadState(new File(new FileInfo("state.sav")));
-		}
-
-		private void btnSave_Click(object sender, EventArgs e)
-		{
-			_board.SaveState(new File(new FileInfo("state.sav")));
-		}
-
-		private void btnSwapJS_Click(object sender, EventArgs e)
+		private void _tbSwapJoystick_Click(object sender, EventArgs e)
 		{
 			_currentJoystic = _currentJoystic == 0 ? (byte)5 : (byte)0;
+		}
+
+		private void _tbLoadState_Click(object sender, EventArgs e)
+		{
+			if (_dlgOpenState.ShowDialog() == DialogResult.OK)
+			{
+				_board.LoadState(new File(new FileInfo(_dlgOpenState.FileName)));
+			}
+		}
+
+		private void _tbSaveState_Click(object sender, EventArgs e)
+		{
+			if (_dlgSaveState.ShowDialog() == DialogResult.OK)
+			{
+				_board.SaveState(new File(new FileInfo(_dlgOpenState.FileName)));
+			}
+		}
+
+		private void _tbAttachDiskImage_Click(object sender, EventArgs e)
+		{
+			if (_dlgAttachDiskImage.ShowDialog() == DialogResult.OK)
+			{
+				_drive.Drive.Attach(new File(new FileInfo(_dlgAttachDiskImage.FileName)));
+			}
 		}
 	}
 }

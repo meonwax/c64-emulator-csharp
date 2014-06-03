@@ -40,7 +40,7 @@ namespace c64_win_gdi
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new Form1());
+			Application.Run(new C64EmuForm());
 		}
 	}
 }
