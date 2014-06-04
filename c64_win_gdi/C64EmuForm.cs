@@ -36,15 +36,18 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Threading;
+using System.Diagnostics;
 
 namespace c64_win_gdi
 {
 	public partial class C64EmuForm : Form
 	{
-		File _kernel = new File(new FileInfo(@".\kernal.rom"));
-		File _basic = new File(new FileInfo(@".\basic.rom"));
-		File _charGen = new File(new FileInfo(@".\chargen.rom"));
-		File _driveKernel = new File(new FileInfo(@".\d1541.rom"));
+		private object _syncRoot = new object();
+
+		private File _kernel = new File(new FileInfo(@".\kernal.rom"));
+		private File _basic = new File(new FileInfo(@".\basic.rom"));
+		private File _charGen = new File(new FileInfo(@".\chargen.rom"));
+		private File _driveKernel = new File(new FileInfo(@".\d1541.rom"));
 
 		private Board.Board _board;
 		private DiskDrive.CBM1541 _drive;
@@ -52,23 +55,76 @@ namespace c64_win_gdi
 		private Input.Keyboard _keyboard;
 
 		private byte _currentJoystic;
+		private bool _emulatorRunning;
+
+		Thread _thread;
 
 		public C64EmuForm()
 		{
 			InitializeComponent();
 
-			_board = new Board.Board(new GdiVideo(panel1), _kernel, _basic, _charGen);
+			CreateEmulator();
 
-			_drive = new DiskDrive.CBM1541(_driveKernel, _board.Serial);
+			_thread = new Thread(new ThreadStart(EmulateFrame));
+			_thread.Start();
+		}
 
-			_board.SystemClock.OnPhaseEnd += new Clock.Clock.PhaseEndDelegate(_drive.DriveClock.Run);
-			_board.OnLoadState += new Board.Board.StateOperationDelegate(_drive.ReadDeviceState);
-			_board.OnSaveState += new Board.Board.StateOperationDelegate(_drive.WriteDeviceState);
+		private void CreateEmulator()
+		{
+			lock (_syncRoot)
+			{
+				DestoryEmulator();
 
-			_keyboard = new Input.Keyboard(_board.SystemCias[0].PortA, _board.SystemCias[0].PortB, null);
+				_board = new Board.Board(new GdiVideo(panel1), _kernel, _basic, _charGen);
 
-			Thread thread = new Thread(new ThreadStart(_board.Start));
-			thread.Start();
+				_drive = new DiskDrive.CBM1541(_driveKernel, _board.Serial);
+
+				_board.SystemClock.OnPhaseEnd += _drive.DriveClock.Run;
+				_board.OnLoadState += _drive.ReadDeviceState;
+				_board.OnSaveState += _drive.WriteDeviceState;
+
+				_keyboard = new Input.Keyboard(_board.SystemCias[0].PortA, _board.SystemCias[0].PortB, null);
+
+				_emulatorRunning = true;
+			}
+		}
+
+		private void DestoryEmulator()
+		{
+			if (_board != null)
+			{
+				_board.SystemClock.OnPhaseEnd -= _drive.DriveClock.Run;
+				_board.OnLoadState -= _drive.ReadDeviceState;
+				_board.OnSaveState -= _drive.WriteDeviceState;
+
+				_board = null;
+				_drive = null;
+				_keyboard = null;
+			}
+		}
+
+		private void EmulateFrame()
+		{
+			Stopwatch timer = new Stopwatch();
+
+			while (_emulatorRunning)
+			{
+				lock (_syncRoot)
+				{
+					timer.Restart();
+
+					_board.Start();
+
+					long elapsed = timer.ElapsedMilliseconds;
+					if (elapsed > 15)
+					{
+						Thread.Sleep(0);
+					}
+
+					while (timer.ElapsedMilliseconds < 20)
+						;
+				}
+			}
 		}
 
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
@@ -208,6 +264,17 @@ namespace c64_win_gdi
 			{
 				_drive.Drive.Attach(new File(new FileInfo(_dlgAttachDiskImage.FileName)));
 			}
+		}
+
+		private void _tbRestartEmulator_Click(object sender, EventArgs e)
+		{
+			CreateEmulator();
+		}
+
+		private void C64EmuForm_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			_emulatorRunning = false;
+			_thread.Join();
 		}
 	}
 }

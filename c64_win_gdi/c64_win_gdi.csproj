@@ -111,6 +111,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="attach.ico" />
+    <Content Include="restart.ico" />
     <Content Include="frame.ico" />
     <Content Include="swap.ico" />
     <Content Include="open.ico" />

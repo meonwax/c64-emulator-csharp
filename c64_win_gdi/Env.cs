@@ -169,8 +169,8 @@ namespace c64_win_gdi
 
 		public unsafe void Flush()
 		{
-			//_panel.BeginInvoke(new DrawDelegate(DrawAsync), _bitmap);
-			_panel.Invoke(new DrawDelegate(Draw), _bitmap);
+			_panel.BeginInvoke(new DrawDelegate(DrawAsync), _bitmap);
+			//_panel.Invoke(new DrawDelegate(Draw), _bitmap);
 
 			_frame++;
 

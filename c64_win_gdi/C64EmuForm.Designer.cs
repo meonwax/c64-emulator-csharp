@@ -38,6 +38,7 @@
 			this._dlgAttachDiskImage = new System.Windows.Forms.OpenFileDialog();
 			this._dlgOpenState = new System.Windows.Forms.OpenFileDialog();
 			this._dlgSaveState = new System.Windows.Forms.SaveFileDialog();
+			this._tbRestartEmulator = new System.Windows.Forms.ToolStripButton();
 			this.panel1.SuspendLayout();
 			this._toolBar.SuspendLayout();
 			this.SuspendLayout();
@@ -57,7 +58,8 @@
             this._tbOpenState,
             this._tbSaveState,
             this._tbSwapJoystick,
-            this._tbAttachDiskImage});
+            this._tbAttachDiskImage,
+            this._tbRestartEmulator});
 			this._toolBar.Location = new System.Drawing.Point(0, 0);
 			this._toolBar.Name = "_toolBar";
 			this._toolBar.Size = new System.Drawing.Size(617, 25);
@@ -120,6 +122,17 @@
 			// 
 			this._dlgSaveState.Filter = "C64 Emulator State files (*.EMS)|*.txt|All files (*.*)|*.*";
 			// 
+			// _tbRestartEmulator
+			// 
+			this._tbRestartEmulator.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this._tbRestartEmulator.Image = ((System.Drawing.Image)(resources.GetObject("_tbRestartEmulator.Image")));
+			this._tbRestartEmulator.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this._tbRestartEmulator.Name = "_tbRestartEmulator";
+			this._tbRestartEmulator.Size = new System.Drawing.Size(23, 22);
+			this._tbRestartEmulator.Text = "Restart";
+			this._tbRestartEmulator.ToolTipText = "Restart Emulator";
+			this._tbRestartEmulator.Click += new System.EventHandler(this._tbRestartEmulator_Click);
+			// 
 			// C64EmuForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -130,6 +143,7 @@
 			this.KeyPreview = true;
 			this.Name = "C64EmuForm";
 			this.Text = "Commodore 64 Emulator";
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.C64EmuForm_FormClosing);
 			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
 			this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyUp);
 			this.panel1.ResumeLayout(false);
@@ -151,6 +165,7 @@
         private System.Windows.Forms.OpenFileDialog _dlgAttachDiskImage;
         private System.Windows.Forms.OpenFileDialog _dlgOpenState;
         private System.Windows.Forms.SaveFileDialog _dlgSaveState;
+		private System.Windows.Forms.ToolStripButton _tbRestartEmulator;
 	}
 }
 

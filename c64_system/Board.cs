@@ -64,25 +64,22 @@ namespace Board
 
 			public override void Run()
 			{
-				while (true)
+				Running = true;
+
+				while (Running)
 				{
-					Running = true;
+					ExecuteNoCombo(0);
+					ExecuteWithCombo(1);
+					ExecuteNoCombo(2);
+					ExecuteNoCombo(3);
 
-					while (Running)
-					{
-						ExecuteNoCombo(0);
-						ExecuteWithCombo(1);
-						ExecuteNoCombo(2);
-						ExecuteNoCombo(3);
+					RaiseOnPhaseEnd();
 
-						RaiseOnPhaseEnd();
-
-						//_clockCount++;
-					}
-
-					if (OnTimeSlice != null)
-						OnTimeSlice();
+					//_clockCount++;
 				}
+
+				if (OnTimeSlice != null)
+					OnTimeSlice();
 			}
 
 			public override void Halt() { }
