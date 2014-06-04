@@ -35,10 +35,10 @@
 			this._tbSaveState = new System.Windows.Forms.ToolStripButton();
 			this._tbSwapJoystick = new System.Windows.Forms.ToolStripButton();
 			this._tbAttachDiskImage = new System.Windows.Forms.ToolStripButton();
+			this._tbRestartEmulator = new System.Windows.Forms.ToolStripButton();
 			this._dlgAttachDiskImage = new System.Windows.Forms.OpenFileDialog();
 			this._dlgOpenState = new System.Windows.Forms.OpenFileDialog();
 			this._dlgSaveState = new System.Windows.Forms.SaveFileDialog();
-			this._tbRestartEmulator = new System.Windows.Forms.ToolStripButton();
 			this.panel1.SuspendLayout();
 			this._toolBar.SuspendLayout();
 			this.SuspendLayout();
@@ -110,6 +110,17 @@
 			this._tbAttachDiskImage.ToolTipText = "Attach Disk Image";
 			this._tbAttachDiskImage.Click += new System.EventHandler(this._tbAttachDiskImage_Click);
 			// 
+			// _tbRestartEmulator
+			// 
+			this._tbRestartEmulator.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this._tbRestartEmulator.Image = ((System.Drawing.Image)(resources.GetObject("_tbRestartEmulator.Image")));
+			this._tbRestartEmulator.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this._tbRestartEmulator.Name = "_tbRestartEmulator";
+			this._tbRestartEmulator.Size = new System.Drawing.Size(23, 22);
+			this._tbRestartEmulator.Text = "Restart";
+			this._tbRestartEmulator.ToolTipText = "Restart Emulator";
+			this._tbRestartEmulator.Click += new System.EventHandler(this._tbRestartEmulator_Click);
+			// 
 			// _dlgAttachDiskImage
 			// 
 			this._dlgAttachDiskImage.Filter = "CBM 1541-II Disk Image files (*.D64)|*.txt|All files (*.*)|*.*";
@@ -122,17 +133,6 @@
 			// 
 			this._dlgSaveState.Filter = "C64 Emulator State files (*.EMS)|*.txt|All files (*.*)|*.*";
 			// 
-			// _tbRestartEmulator
-			// 
-			this._tbRestartEmulator.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this._tbRestartEmulator.Image = ((System.Drawing.Image)(resources.GetObject("_tbRestartEmulator.Image")));
-			this._tbRestartEmulator.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this._tbRestartEmulator.Name = "_tbRestartEmulator";
-			this._tbRestartEmulator.Size = new System.Drawing.Size(23, 22);
-			this._tbRestartEmulator.Text = "Restart";
-			this._tbRestartEmulator.ToolTipText = "Restart Emulator";
-			this._tbRestartEmulator.Click += new System.EventHandler(this._tbRestartEmulator_Click);
-			// 
 			// C64EmuForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -144,6 +144,7 @@
 			this.Name = "C64EmuForm";
 			this.Text = "Commodore 64 Emulator";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.C64EmuForm_FormClosing);
+			this.Load += new System.EventHandler(this.C64EmuForm_Load);
 			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
 			this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyUp);
 			this.panel1.ResumeLayout(false);

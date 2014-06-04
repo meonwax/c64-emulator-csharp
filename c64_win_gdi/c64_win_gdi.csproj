@@ -48,7 +48,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Env.cs" />
+    <Compile Include="C64Emulator.cs" />
+    <Compile Include="Environment.cs" />
     <Compile Include="C64EmuForm.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -42,211 +42,40 @@ namespace c64_win_gdi
 {
 	public partial class C64EmuForm : Form
 	{
-		private object _syncRoot = new object();
-
-		private File _kernel = new File(new FileInfo(@".\kernal.rom"));
-		private File _basic = new File(new FileInfo(@".\basic.rom"));
-		private File _charGen = new File(new FileInfo(@".\chargen.rom"));
-		private File _driveKernel = new File(new FileInfo(@".\d1541.rom"));
-
-		private Board.Board _board;
-		private DiskDrive.CBM1541 _drive;
-
-		private Input.Keyboard _keyboard;
-
-		private byte _currentJoystic;
-		private bool _emulatorRunning;
-
-		Thread _thread;
+		C64Emulator _emulator;
 
 		public C64EmuForm()
 		{
 			InitializeComponent();
 
-			CreateEmulator();
-
-			_thread = new Thread(new ThreadStart(EmulateFrame));
-			_thread.Start();
+			_emulator = new C64Emulator(panel1);
 		}
 
-		private void CreateEmulator()
+		private void C64EmuForm_Load(object sender, EventArgs e)
 		{
-			lock (_syncRoot)
-			{
-				DestoryEmulator();
-
-				_board = new Board.Board(new GdiVideo(panel1), _kernel, _basic, _charGen);
-
-				_drive = new DiskDrive.CBM1541(_driveKernel, _board.Serial);
-
-				_board.SystemClock.OnPhaseEnd += _drive.DriveClock.Run;
-				_board.OnLoadState += _drive.ReadDeviceState;
-				_board.OnSaveState += _drive.WriteDeviceState;
-
-				_keyboard = new Input.Keyboard(_board.SystemCias[0].PortA, _board.SystemCias[0].PortB, null);
-
-				_emulatorRunning = true;
-			}
-		}
-
-		private void DestoryEmulator()
-		{
-			if (_board != null)
-			{
-				_board.SystemClock.OnPhaseEnd -= _drive.DriveClock.Run;
-				_board.OnLoadState -= _drive.ReadDeviceState;
-				_board.OnSaveState -= _drive.WriteDeviceState;
-
-				_board = null;
-				_drive = null;
-				_keyboard = null;
-			}
-		}
-
-		private void EmulateFrame()
-		{
-			Stopwatch timer = new Stopwatch();
-
-			while (_emulatorRunning)
-			{
-				lock (_syncRoot)
-				{
-					timer.Restart();
-
-					_board.Start();
-
-					long elapsed = timer.ElapsedMilliseconds;
-					if (elapsed > 15)
-					{
-						Thread.Sleep(0);
-					}
-
-					while (timer.ElapsedMilliseconds < 20)
-						;
-				}
-			}
-		}
-
-		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-		{
-			//_keyboard.KeyUp(Input.Keyboard.Keys.KEY_RET);
-
-			//if (msg.Msg == 256 && keyData == System.Windows.Forms.Keys.Enter)
-			//    _keyboard.KeyDown(Input.Keyboard.Keys.KEY_RET);
-
-			return base.ProcessCmdKey(ref msg, keyData);
+			_emulator.Start();
 		}
 
 		private void Form1_KeyDown(object sender, KeyEventArgs e)
 		{
-			KeyboardEvent(e.KeyCode, _keyboard.KeyDown);
+			_emulator.KeyPressed(e.KeyCode);
 		}
 
 		private void Form1_KeyUp(object sender, KeyEventArgs e)
 		{
-			KeyboardEvent(e.KeyCode, _keyboard.KeyUp);
-		}
-
-		delegate void HandleKeyboardMethod(Input.Keyboard.Keys key);
-
-		private void KeyboardEvent(Keys key, HandleKeyboardMethod handle)
-		{
-			if (key >= Keys.A && key <= Keys.Z)
-				handle(Input.Keyboard.Keys.KEY_A + (key - Keys.A));
-			else if (key >= Keys.D0 && key <= Keys.D9)
-				handle(Input.Keyboard.Keys.KEY_0 + (key - Keys.D0));
-			else if (key == Keys.Space)
-				handle(Input.Keyboard.Keys.KEY_SP);
-			else if (key >= Keys.F1 && key <= Keys.F7)
-			{
-				int fkey = key - Keys.F1;
-				if ((fkey & 1) == 1)
-					handle(Input.Keyboard.Keys.KEY_LSH);
-
-				handle(Input.Keyboard.Keys.KEY_F1 + (fkey >> 1));
-			}
-			else if ((ushort)key == 192)
-				handle(Input.Keyboard.Keys.KEY_LEFT);
-			else if ((ushort)key == 187)
-				handle(Input.Keyboard.Keys.KEY_PL);
-			else if ((ushort)key == 189)
-				handle(Input.Keyboard.Keys.KEY_MI);
-			//else if ((ushort)key == 222)
-			//    handle(Input.Keyboard.Keys.KEY_PND);
-			else if ((ushort)key == 219)
-				handle(Input.Keyboard.Keys.KEY_AT);
-			else if ((ushort)key == 221)
-				handle(Input.Keyboard.Keys.KEY_STAR);
-			else if ((ushort)key == 220)
-				handle(Input.Keyboard.Keys.KEY_UP);
-			else if ((ushort)key == 186)
-				handle(Input.Keyboard.Keys.KEY_COL);
-			else if ((ushort)key == 222)
-				handle(Input.Keyboard.Keys.KEY_SCOL);
-			//else if ((ushort)key == 222)
-			//    handle(Input.Keyboard.Keys.KEY_EQ);
-			else if ((ushort)key == 188)
-				handle(Input.Keyboard.Keys.KEY_COM);
-			else if ((ushort)key == 190)
-				handle(Input.Keyboard.Keys.KEY_DOT);
-			else if ((ushort)key == 191)
-				handle(Input.Keyboard.Keys.KEY_SLASH);
-			else if (key == Keys.Left)
-			{
-				handle(Input.Keyboard.Keys.KEY_LSH);
-				handle(Input.Keyboard.Keys.KEY_HOR);
-			}
-			else if (key == Keys.Right)
-				handle(Input.Keyboard.Keys.KEY_HOR);
-			else if (key == Keys.Up)
-			{
-				handle(Input.Keyboard.Keys.KEY_LSH);
-				handle(Input.Keyboard.Keys.KEY_VER);
-			}
-			else if (key == Keys.Down)
-				handle(Input.Keyboard.Keys.KEY_VER);
-			else if (key == Keys.Back)
-				handle(Input.Keyboard.Keys.KEY_DEL);
-			else if (key == Keys.Enter)
-				handle(Input.Keyboard.Keys.KEY_RET);
-			else if (key == Keys.Home)
-				handle(Input.Keyboard.Keys.KEY_HOME);
-			else if (key == Keys.ShiftKey)
-				handle(Input.Keyboard.Keys.KEY_LSH);
-			//else if (key == Keys.Shift)
-			//    handle(Input.Keyboard.Keys.KEY_RSH);
-			else if ((ushort)key == 17)
-				handle(Input.Keyboard.Keys.KEY_CTRL);
-			else if ((ushort)key == 18)
-				handle(Input.Keyboard.Keys.KEY_CMD);
-			else if (key == Keys.End)
-				handle(Input.Keyboard.Keys.KEY_RUN);
-			else if (key == Keys.Escape)
-			{
-				// handle RESTORE KEY
-			}
-			if (key == Keys.NumPad8)
-				handle(Input.Keyboard.Keys.J1U + _currentJoystic);
-			else if (key == Keys.NumPad5)
-				handle(Input.Keyboard.Keys.J1D + _currentJoystic);
-			else if (key == Keys.NumPad4)
-				handle(Input.Keyboard.Keys.J1L + _currentJoystic);
-			else if (key == Keys.NumPad6)
-				handle(Input.Keyboard.Keys.J1R + _currentJoystic);
-			else if (key == Keys.NumPad0)
-				handle(Input.Keyboard.Keys.J1F + _currentJoystic);
+			_emulator.KeyReleased(e.KeyCode);
 		}
 
 		private void _tbSwapJoystick_Click(object sender, EventArgs e)
 		{
-			_currentJoystic = _currentJoystic == 0 ? (byte)5 : (byte)0;
+			_emulator.SwapJoystick();
 		}
 
 		private void _tbLoadState_Click(object sender, EventArgs e)
 		{
 			if (_dlgOpenState.ShowDialog() == DialogResult.OK)
 			{
-				_board.LoadState(new File(new FileInfo(_dlgOpenState.FileName)));
+				_emulator.LoadState(_dlgOpenState.FileName);
 			}
 		}
 
@@ -254,7 +83,7 @@ namespace c64_win_gdi
 		{
 			if (_dlgSaveState.ShowDialog() == DialogResult.OK)
 			{
-				_board.SaveState(new File(new FileInfo(_dlgOpenState.FileName)));
+				_emulator.SaveState(_dlgOpenState.FileName);
 			}
 		}
 
@@ -262,19 +91,18 @@ namespace c64_win_gdi
 		{
 			if (_dlgAttachDiskImage.ShowDialog() == DialogResult.OK)
 			{
-				_drive.Drive.Attach(new File(new FileInfo(_dlgAttachDiskImage.FileName)));
+				_emulator.AttachImage(_dlgAttachDiskImage.FileName);
 			}
 		}
 
 		private void _tbRestartEmulator_Click(object sender, EventArgs e)
 		{
-			CreateEmulator();
+			_emulator.Restart();
 		}
 
 		private void C64EmuForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			_emulatorRunning = false;
-			_thread.Join();
+			_emulator.Stop();
 		}
 	}
 }
