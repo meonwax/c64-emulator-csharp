@@ -55,27 +55,6 @@ namespace CPU
 				DecodeAddressOp addrOp = new DecodeAddressOp(_cpu, decoded._addressing);
 				ExecuteOpcodeOp execOp = new ExecuteOpcodeOp(_cpu, decoded._instruction, decoded._timing._prolongOnPageCross);
 
-				//if (decoded._instruction == null)
-				//    decoded = decoded;
-
-				//if (_cpu is MOS6510 == false)
-				//{
-				//    if (_cpu.State.PC.Value - 1 == 0xEB1D)
-				//        _cpu = _cpu;
-				//}
-
-				if (_cpu is MOS6510)
-				{
-				//    if (_cpu.Opcode == 0)
-				//        _cpu = _cpu;
-
-				//    DecodingTable.DecodingTimes[lastOpcode] = (int)(clock.ClockCount - DecodingTable.LastCount);
-				//    DecodingTable.LastCount = clock.ClockCount;
-
-					if (_cpu.State.PC.Value - 1 == 0xB929)
-						_cpu = _cpu;
-				}
-
 				byte addrTime = decoded._timing._addressingTime;
 				byte execTime = decoded._timing._execTime;
 
