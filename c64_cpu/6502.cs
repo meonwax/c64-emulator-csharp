@@ -46,8 +46,6 @@ namespace CPU
 				first = next = new Clock.ClockEntryRep(new InterruptOp(_cpu, 0xfffe), 7);
 			else
 			{
-				byte lastOpcode = _cpu.Opcode;
-
 				_cpu.Opcode = _cpu.Memory.Read(_cpu.State.PC.Value);
 				_cpu.State.PC.Next();
 
